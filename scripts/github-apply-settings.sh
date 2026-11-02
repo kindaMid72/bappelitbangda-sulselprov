@@ -77,8 +77,8 @@ step "Actions: default GITHUB_TOKEN read-only, workflows cannot approve PRs" \
   gh api -X PUT "repos/$repo/actions/permissions/workflow" \
     -f default_workflow_permissions=read -F can_approve_pull_request_reviews=false
 
-step "Actions: only GitHub-owned actions are allowed" \
-  gh api -X PUT "repos/$repo/actions/permissions" -F enabled=true -f allowed_actions=selected
+step "Actions: only selected actions, and every action must be pinned to a full commit SHA" \
+  gh api -X PUT "repos/$repo/actions/permissions" -F enabled=true -f allowed_actions=selected -F sha_pinning_required=true
 step "Actions allow-list: GitHub-owned only, no third-party patterns" \
   gh api -X PUT "repos/$repo/actions/permissions/selected-actions" \
     -F github_owned_allowed=true -F verified_allowed=false
