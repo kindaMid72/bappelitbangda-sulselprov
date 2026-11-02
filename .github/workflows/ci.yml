@@ -91,6 +91,8 @@ jobs:
         working-directory: web
       - name: Build
         run: make build
+      - name: Container images build
+        run: make docker-build
   workflow-audit:
     name: workflow-audit
     runs-on: ubuntu-24.04

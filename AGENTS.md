@@ -16,6 +16,7 @@ make db-new name=... / db-migrate / db-generate / db-test
 
 ## Hard rules
 - Contract first: change `openapi.yaml` in its own small PR before implementing.
+- Branch `<type>/<issue-id>-<slug>` (type: feat|fix|chore|docs) from fresh `origin/main`; one task, one branch, one PR with `Closes #<issue-id>`. No issue, no branch. No merge commits between branches; see `docs/workflow/team-and-agents.md`.
 - Never edit generated files (`api/internal/api`, `api/internal/db/dbgen`, `web/src/lib/api`, `docs/schema`); run `make gen` / `make db-docs`.
 - Never edit, delete or rename a migration that is on main. Add a new one with a working Down.
 - New table: `COMMENT ON TABLE`, an index on each foreign key, a grant in a migration and a test in `api/db/tests/privileges.sql` if the app must not edit/delete it.

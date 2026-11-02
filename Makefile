@@ -1,5 +1,5 @@
 # The only interface to this repository: humans, agents and CI all call `make`.
-# See docs/workflow/team-and-agents.md section 5.
+# Targets are listed in AGENTS.md; `make -n <target>` shows what each runs.
 SHELL := bash
 .SHELLFLAGS := -euo pipefail -c
 
@@ -129,6 +129,18 @@ db-docs-check: db-init
 	[ "$$before" = "$$after" ] || { echo "ERROR: docs/schema is stale. Run 'make db-docs' and commit."; exit 1; }; \
 	echo "db-docs-check: docs/schema is up to date"
 
-# ---- implemented in the deploy tooling PR ----
-docker-build release smoke:
-	@echo "'make $@' is implemented in the deploy tooling PR (docs/workflow/SETUP-AGENT-WORKFLOW.md phase 8)."; exit 1
+# ---- container images, release bundle, smoke test (see docs/handover/runbook.md) ----
+docker-build:
+	docker build -f api/Dockerfile --target api -t bappelitbangda-api:dev .
+	docker build -f api/Dockerfile --target migrate -t bappelitbangda-migrate:dev .
+	docker build -f web/Dockerfile -t bappelitbangda-web:dev web
+
+# usage: make release VERSION=v0.1.0   (builds into dist/; never deploys)
+release:
+	@test -n "$(VERSION)" || { echo "usage: make release VERSION=vX.Y.Z"; exit 1; }
+	scripts/release.sh $(VERSION)
+
+# usage: make smoke URL=http://localhost:8081
+smoke:
+	@test -n "$(URL)" || { echo "usage: make smoke URL=http://host:port"; exit 1; }
+	deploy/scripts/smoke.sh $(URL)

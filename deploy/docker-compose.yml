@@ -1,0 +1,141 @@
+# UNTESTED ON THE VPS: run on staging first.
+# Production and staging run from this one file, selected with profiles:
+#   VERSION=v0.1.0 docker compose -f docker-compose.yml --profile staging up -d
+#   VERSION=v0.1.0 docker compose -f docker-compose.yml --profile prod up -d
+# Images come from the release bundle (`docker load`), not from a registry. No database port is published.
+# Secrets are never in this repository:
+#   - environment files (.env.production / .env.staging) exist only on the VPS, mode 0600
+#   - the key-encryption key (KEK) is a file secret outside the repo and outside the backup set
+name: bappelitbangda
+
+x-common: &common
+  restart: unless-stopped
+  security_opt: ["no-new-privileges:true"]
+  cap_drop: ["ALL"]
+  logging:
+    driver: json-file
+    options: { max-size: "10m", max-file: "5" }
+
+x-api: &api
+  <<: *common
+  image: bappelitbangda-api:${VERSION:?set VERSION}
+  read_only: true
+  mem_limit: 256m
+
+x-web: &web
+  <<: *common
+  image: bappelitbangda-web:${VERSION:?set VERSION}
+  read_only: true
+  tmpfs: ["/tmp"]
+  mem_limit: 384m
+
+x-migrate: &migrate
+  <<: *common
+  restart: "no"
+  image: bappelitbangda-migrate:${VERSION:?set VERSION}
+  read_only: true
+  mem_limit: 128m
+
+x-nginx: &nginx
+  <<: *common
+  image: nginx:stable-alpine@sha256:0e52bd054126cdc040b1276c0af347aeb02a41b9cfe305d6094767ac30e97949
+  read_only: true
+  tmpfs: ["/var/cache/nginx", "/var/run", "/tmp"]
+  mem_limit: 128m
+  cap_add: ["CHOWN", "SETGID", "SETUID", "NET_BIND_SERVICE"]
+
+x-db: &db
+  <<: *common
+  image: postgres:18@sha256:3a4264520e121176619f54ff867d12774bc81e95e7b84db58d63bccdb6144b81
+  mem_limit: 768m
+  cap_drop: []
+  healthcheck:
+    test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-postgres}"]
+    interval: 5s
+    timeout: 5s
+    retries: 20
+
+services:
+  # ---------------- production ----------------
+  db:
+    <<: *db
+    profiles: [prod]
+    env_file: ${ENV_FILE_PROD:-/opt/bappelitbangda/.env.production}
+    volumes: ["pgdata:/var/lib/postgresql"]
+    networks: [prod]
+  migrate:
+    <<: *migrate
+    profiles: [migrate-prod]
+    env_file: ${ENV_FILE_PROD:-/opt/bappelitbangda/.env.production}
+    depends_on: { db: { condition: service_healthy } }
+    networks: [prod]
+  api:
+    <<: *api
+    profiles: [prod]
+    env_file: ${ENV_FILE_PROD:-/opt/bappelitbangda/.env.production}
+    secrets: [kek]
+    depends_on: { db: { condition: service_healthy } }
+    networks: { prod: { aliases: [api] } }
+  web:
+    <<: *web
+    profiles: [prod]
+    env_file: ${ENV_FILE_PROD:-/opt/bappelitbangda/.env.production}
+    depends_on: [api]
+    networks: { prod: { aliases: [web] } }
+  nginx:
+    <<: *nginx
+    profiles: [prod]
+    ports: ["${PROD_PORT:-80}:80"]
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/admin-allowlist.conf:/etc/nginx/admin-allowlist.conf:ro
+    depends_on: [web, api]
+    networks: [prod]
+
+  # ---------------- staging (synthetic data only, separate database and ports) ----------------
+  db-staging:
+    <<: *db
+    profiles: [staging]
+    env_file: ${ENV_FILE_STAGING:-/opt/bappelitbangda/.env.staging}
+    volumes: ["pgdata-staging:/var/lib/postgresql"]
+    networks: [staging]
+  migrate-staging:
+    <<: *migrate
+    profiles: [migrate-staging]
+    env_file: ${ENV_FILE_STAGING:-/opt/bappelitbangda/.env.staging}
+    depends_on: { db-staging: { condition: service_healthy } }
+    networks: [staging]
+  api-staging:
+    <<: *api
+    profiles: [staging]
+    env_file: ${ENV_FILE_STAGING:-/opt/bappelitbangda/.env.staging}
+    depends_on: { db-staging: { condition: service_healthy } }
+    networks: { staging: { aliases: [api] } }
+  web-staging:
+    <<: *web
+    profiles: [staging]
+    env_file: ${ENV_FILE_STAGING:-/opt/bappelitbangda/.env.staging}
+    depends_on: [api-staging]
+    networks: { staging: { aliases: [web] } }
+  nginx-staging:
+    <<: *nginx
+    profiles: [staging]
+    ports: ["${STAGING_PORT:-8081}:80"]
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/admin-allowlist.conf:/etc/nginx/admin-allowlist.conf:ro
+    depends_on: [web-staging, api-staging]
+    networks: [staging]
+
+networks:
+  prod: {}
+  staging: {}
+
+volumes:
+  pgdata: {}
+  pgdata-staging: {}
+
+secrets:
+  # Delivered outside the repo and outside the backup set. Not read by the application yet (KTP encryption is not built).
+  kek:
+    file: ${KEK_FILE:-/opt/bappelitbangda/secrets/kek}
