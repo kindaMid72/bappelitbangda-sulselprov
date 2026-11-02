@@ -2,21 +2,25 @@
 # Applies the repository settings from docs/workflow/team-and-agents.md sections 11-12 with the GitHub CLI.
 # Default is DRY-RUN: it only prints the commands. Nothing changes without --apply.
 #
-# Usage: scripts/github-apply-settings.sh OWNER/REPO [--apply] [--approvals N]
+# Usage: scripts/github-apply-settings.sh OWNER/REPO [--apply] [--approvals N] [--no-main-ruleset]
 #   --approvals N   required approving reviews on main (default 1). Use 0 while only one GitHub
 #                   account can review; raise to 1 (with code owner review) when the second developer joins.
+#   --no-main-ruleset  skip the branch ruleset for main. Use it while the CI workflows are not yet on main:
+#                   a required status check that never reports would block every merge.
 set -euo pipefail
 
-usage() { echo "Usage: $0 OWNER/REPO [--apply] [--approvals N]" >&2; exit 2; }
+usage() { echo "Usage: $0 OWNER/REPO [--apply] [--approvals N] [--no-main-ruleset]" >&2; exit 2; }
 
 repo="${1:-}"; [ -n "$repo" ] || usage
 shift
 apply=0
 approvals=1
+main_ruleset=1
 while [ $# -gt 0 ]; do
   case "$1" in
     --apply) apply=1 ;;
     --approvals) shift; approvals="${1:-}" ;;
+    --no-main-ruleset) main_ruleset=0 ;;
     *) usage ;;
   esac
   shift
@@ -40,7 +44,7 @@ step() {
 }
 
 # Ruleset JSON with the review requirement adjusted for --approvals.
-main_ruleset() {
+main_ruleset_json() {
   jq --argjson n "$approvals" '
     (.rules[] | select(.type == "pull_request") | .parameters) |=
       (.required_approving_review_count = $n
@@ -89,7 +93,11 @@ step "Secret scanning and push protection on (public repo or paid plan)" \
     -f 'security_and_analysis[secret_scanning_push_protection][status]=enabled'
 step "Private vulnerability reporting on" gh api -X PUT "repos/$repo/private-vulnerability-reporting"
 
-step "Ruleset: main-protection (approvals=$approvals)" upsert_ruleset main-protection "$(main_ruleset)"
+if [ "$main_ruleset" -eq 1 ]; then
+  step "Ruleset: main-protection (approvals=$approvals)" upsert_ruleset main-protection "$(main_ruleset_json)"
+else
+  echo "[skip]    Ruleset: main-protection (--no-main-ruleset)"
+fi
 step "Ruleset: release-tags-immutable" upsert_ruleset release-tags-immutable "$(cat "$root/.github/rulesets/tags.json")"
 
 echo
