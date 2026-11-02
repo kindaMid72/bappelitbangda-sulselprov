@@ -1,0 +1,7 @@
+# Run from api/ (see `make gen`). Output is generated: never edit it by hand.
+package: api
+output: internal/api/api.gen.go
+generate:
+  models: true
+  chi-server: true
+  strict-server: true

@@ -1,5 +1,5 @@
 # Every path is owned by both developers, so the other person is always the required reviewer
-# and a PR author cannot deadlock their own PR (docs/workflow/team-and-agents.md section 3).
+# and a PR author cannot deadlock their own PR (docs/workflow/team-and-agents.md, Roles).
 #
 # TODO (human): when the second developer joins, add their handle on the same line:
 #   * @kindaMid72 @SECOND_DEVELOPER_HANDLE

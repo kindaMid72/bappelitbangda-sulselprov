@@ -1,6 +1,3 @@
-Status: draft
-Last reviewed: 2026-11-02
-
 # Owners
 
 This repository is public: use roles here, not names or contact details. Keep the real holder list in a private place and record where it is.
