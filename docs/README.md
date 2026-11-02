@@ -1,23 +1,15 @@
 # Documentation index
 
-Every doc under `docs/` (except `docs/schema/`, which is generated) starts with `Status:` and `Last reviewed:`. `make docs-check` enforces this and that each doc is listed here.
-Generated schema documentation: [`schema/`](schema/) (made by `make db-docs`, never hand-edited).
+Generated schema documentation lives in [`schema/`](schema/) (made by `make db-docs`, never hand-edited). Add a line here when you add a doc, and delete the doc when nobody needs it.
 
-| Document | Path | Owner | Status | Last reviewed |
-|---|---|---|---|---|
-| PRD v1.1 (English copy, unsigned) | [`prd/PRD.md`](prd/PRD.md) | both developers (humans only edit via the Google Doc) | canonical | 2026-11-02 |
-| PRD source, hash and update procedure | [`prd/README.md`](prd/README.md) | both developers | canonical | 2026-11-02 |
-| Requirement traceability (generated) | [`prd/traceability.md`](prd/traceability.md) | both developers | generated | 2026-11-02 |
-| Team and agent workflow | [`workflow/team-and-agents.md`](workflow/team-and-agents.md) | both developers | draft | 2026-11-02 |
-| Setup recipe for the coding agent | [`workflow/SETUP-AGENT-WORKFLOW.md`](workflow/SETUP-AGENT-WORKFLOW.md) | both developers | draft | 2026-11-02 |
-| PRD v1.1 reconciliation | [`decisions/prd-v1.1-reconciliation.md`](decisions/prd-v1.1-reconciliation.md) | both developers | draft | 2026-11-02 |
-| Tech stack decisions (placeholder) | [`decisions/tech-stack.md`](decisions/tech-stack.md) | both developers | draft | 2026-11-02 |
-| Audit: TDD versus PRD (placeholder) | [`decisions/audit-tdd-vs-prd.md`](decisions/audit-tdd-vs-prd.md) | both developers | draft | 2026-11-02 |
-| TDD (placeholder) | [`tdd/TDD.md`](tdd/TDD.md) | both developers | draft | 2026-11-02 |
-| Database schema tooling (placeholder) | [`database/tooling.md`](database/tooling.md) | BE | draft | 2026-11-02 |
-| Runbook | [`handover/runbook.md`](handover/runbook.md) | both developers | draft | 2026-11-02 |
-| Restore drill | [`handover/restore-drill.md`](handover/restore-drill.md) | both developers | draft | 2026-11-02 |
-| Dependencies | [`handover/dependencies.md`](handover/dependencies.md) | both developers | draft | 2026-11-02 |
-| Owners | [`handover/OWNERS.md`](handover/OWNERS.md) | both developers | draft | 2026-11-02 |
-| Deploy log | [`handover/deploy-log.md`](handover/deploy-log.md) | both developers | draft | 2026-11-02 |
-| Known gaps | [`handover/known-gaps.md`](handover/known-gaps.md) | both developers | draft | 2026-11-02 |
+| Document | Path | Purpose |
+|---|---|---|
+| PRD v1.1 (English copy, unsigned) | [`prd/PRD.md`](prd/PRD.md) | Requirements baseline. Humans edit the Google Doc, never this file. |
+| PRD source, hash, update procedure | [`prd/README.md`](prd/README.md) | How the copy is kept in sync with the master. |
+| Requirement traceability (generated) | [`prd/traceability.md`](prd/traceability.md) | Each FR/NFR id with phase and priority. |
+| Team and agent workflow | [`workflow/team-and-agents.md`](workflow/team-and-agents.md) | Roles, task loop, branches and parallel work, security lane. |
+| PRD v1.1 reconciliation | [`decisions/prd-v1.1-reconciliation.md`](decisions/prd-v1.1-reconciliation.md) | Open mismatches and decisions that need a human. |
+| Runbook | [`handover/runbook.md`](handover/runbook.md) | Release, deploy, rollback, backup and restore. |
+| Owners | [`handover/OWNERS.md`](handover/OWNERS.md) | Who holds what, by role. |
+| Deploy log | [`handover/deploy-log.md`](handover/deploy-log.md) | One line per deploy. |
+| Known gaps | [`handover/known-gaps.md`](handover/known-gaps.md) | What is not done, with the blocking OQ. |

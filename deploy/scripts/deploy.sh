@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # UNTESTED ON THE VPS: run on staging first.
 # Deploys a release bundle on THIS server. GitHub never deploys and the VPS holds no GitHub credentials:
-# a maintainer copies the bundle here (scp) and runs this script. See docs/workflow/team-and-agents.md section 14.
+# a maintainer copies the bundle here (scp) and runs this script. See docs/handover/runbook.md.
 #
 # Usage: deploy.sh <version> [--profile staging|prod] [--dry-run]
 # Run it from the extracted bundle: <bundle>/deploy/scripts/deploy.sh v0.1.0 --profile staging

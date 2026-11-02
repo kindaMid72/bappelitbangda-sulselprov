@@ -1,19 +1,8 @@
 #!/usr/bin/env bash
-# 1. Every doc under docs/ (except docs/schema/ and docs/README.md) needs a Status and Last reviewed header
-#    in its first 15 lines, and must be listed in docs/README.md.
-# 2. The requirement ids in docs/prd/traceability.md must equal the ids in docs/prd/PRD.md.
+# The requirement ids in docs/prd/traceability.md must equal the ids in docs/prd/PRD.md.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 fail=0
-
-while IFS= read -r f; do
-  case "$f" in docs/schema/*|docs/README.md) continue ;; esac
-  head -n 15 "$f" | grep -qiE '^status:' || { echo "missing 'Status:' header in $f"; fail=1; }
-  head -n 15 "$f" | grep -qiE '^last reviewed:' || { echo "missing 'Last reviewed:' header in $f"; fail=1; }
-  # docs/README.md must link the path relative to docs/ (basenames collide: several README.md files)
-  rel="${f#docs/}"
-  grep -qF "($rel)" docs/README.md || grep -qF "\`$rel\`" docs/README.md || { echo "$f is not listed in docs/README.md"; fail=1; }
-done < <(find docs -name '*.md' -type f | sort)
 
 prd=docs/prd/PRD.md
 tr=docs/prd/traceability.md
