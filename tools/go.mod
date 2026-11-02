@@ -2,6 +2,8 @@ module github.com/kindaMid72/bappelitbangda-sulselprov/tools
 
 go 1.26.8
 
+toolchain go1.26.10
+
 tool (
 	github.com/k1LoW/tbls
 	github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen
