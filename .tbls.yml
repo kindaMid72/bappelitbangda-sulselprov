@@ -1,0 +1,9 @@
+# Schema documentation generator (`make db-docs`, run from api/). Output: docs/schema (generated, never hand-edited).
+# The DSN comes from the environment; db-docs sets it to a freshly migrated throwaway database.
+dsn: ${TBLS_DSN}
+name: bappelitbangda
+docPath: ../docs/schema  # relative to api/, where `make db-docs` runs tbls
+er:
+  format: mermaid
+exclude:
+  - goose_db_version

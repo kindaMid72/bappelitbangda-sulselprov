@@ -1,0 +1,31 @@
+openapi: 3.0.3
+info:
+  title: Bappelitbangda Sulsel web API
+  version: 0.1.0
+  description: >
+    API contract. This file is the single source of truth: Go server code and the TypeScript
+    client are generated from it (`make gen`). Walking skeleton: health endpoint only.
+servers:
+  - url: /
+paths:
+  /api/v1/health:
+    get:
+      operationId: getHealth
+      summary: Liveness check
+      tags: [system]
+      responses:
+        "200":
+          description: The service is running
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Health"
+components:
+  schemas:
+    Health:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [ok]
