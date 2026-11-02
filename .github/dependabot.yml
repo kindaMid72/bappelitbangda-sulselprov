@@ -28,3 +28,15 @@ updates:
     directory: /
     schedule: { interval: weekly }
     cooldown: { default-days: 7 }
+  - package-ecosystem: docker
+    directory: /api
+    schedule: { interval: weekly }
+    cooldown: { default-days: 7 }
+  - package-ecosystem: docker
+    directory: /web
+    schedule: { interval: weekly }
+    cooldown: { default-days: 7 }
+  - package-ecosystem: docker
+    directory: /deploy
+    schedule: { interval: weekly }
+    cooldown: { default-days: 7 }

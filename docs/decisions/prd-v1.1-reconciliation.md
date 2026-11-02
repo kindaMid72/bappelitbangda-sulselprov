@@ -41,3 +41,13 @@ The TDD, `tech-stack.md`, `audit-tdd-vs-prd.md` and `tooling.md` were **not supp
 - Two key holders, key outside repo and backups, AEAD with key id in the ciphertext (workflow sections 15 and 17) match NFR-17 and OQ-17.
 - RTO 4 hours (workflow section 14) matches NFR-10.
 - Counts: 45 FR (28 Must, 12 Should, 4 Could, 1 Won't) and 17 NFR (12 Must, 5 Should) were recomputed from `docs/prd/PRD.md` by `scripts/gen-traceability.sh`.
+
+## E. Deploy tooling: deviations from the workflow doc (section 14) and what was tested
+
+- `docker build` smoke runs on every CI run, not only on `main`, so a broken Dockerfile is caught in the PR.
+- `release.yml` adds a build provenance attestation (`actions/attest`, public repository) and disables dependency caches in that job (zizmor `cache-poisoning`).
+- One-shot `migrate` image (goose plus the release's migrations) runs as a compose job per profile instead of a host-installed goose, because the database port is not published.
+- Backups are encrypted with `age` to a public recipient key (private key off the server). The PRD does not name a standard; this is a placeholder for OQ-16 / OQ-17.
+- nginx: no `client_max_body_size` is set (nginx default 1 MB applies) and TLS/HSTS/CSP are TODO, because the TDD numbers (OQ-12) and the agency's TLS/crypto standard (OQ-16) are not available.
+- **Tested locally only** (Docker on a developer laptop, synthetic data): release bundle build, `deploy.sh` dry-run and real run, checksum failure on a modified bundle, image-id check, migration job, two successive deploys, `rollback.sh`, automatic return to the previous version after a failed smoke test, admin allowlist (403). **Not tested:** the real VPS, TLS, the systemd fallback (no Docker), real backups with `age`, `gh attestation verify`.
+
