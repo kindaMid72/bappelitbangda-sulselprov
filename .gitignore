@@ -1,0 +1,25 @@
+# local env and agent-local files
+.env
+.env.*
+!.env.example
+CLAUDE.local.md
+.claude/settings.local.json
+.claude/worktrees/
+dist/
+
+# secrets and keys (never commit)
+secrets/
+*.pem
+*.key
+
+# dependencies and build output
+node_modules/
+.svelte-kit/
+build/
+coverage/
+*.log
+
+# OS and editor
+.DS_Store
+.idea/
+.vscode/
