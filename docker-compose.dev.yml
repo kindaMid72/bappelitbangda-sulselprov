@@ -1,0 +1,20 @@
+# Local development only: PostgreSQL with throwaway, synthetic data. Not used in production (see deploy/).
+# The superuser password below is a development value. It is bound to localhost only.
+name: bappelitbangda-dev
+services:
+  db:
+    image: postgres:18
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - dbdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+volumes:
+  dbdata:
