@@ -1,6 +1,3 @@
-Status: canonical
-Last reviewed: 2026-11-02
-
 # PRD (requirements baseline)
 
 | Item | Value |

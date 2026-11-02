@@ -1,5 +1,5 @@
 # The only interface to this repository: humans, agents and CI all call `make`.
-# See docs/workflow/team-and-agents.md section 5.
+# Targets are listed in AGENTS.md; `make -n <target>` shows what each runs.
 SHELL := bash
 .SHELLFLAGS := -euo pipefail -c
 
@@ -129,7 +129,7 @@ db-docs-check: db-init
 	[ "$$before" = "$$after" ] || { echo "ERROR: docs/schema is stale. Run 'make db-docs' and commit."; exit 1; }; \
 	echo "db-docs-check: docs/schema is up to date"
 
-# ---- container images, release bundle, smoke test (see docs/workflow/team-and-agents.md section 14) ----
+# ---- container images, release bundle, smoke test (see docs/handover/runbook.md) ----
 docker-build:
 	docker build -f api/Dockerfile --target api -t bappelitbangda-api:dev .
 	docker build -f api/Dockerfile --target migrate -t bappelitbangda-migrate:dev .

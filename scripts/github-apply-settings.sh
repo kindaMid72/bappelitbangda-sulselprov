@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Applies the repository settings from docs/workflow/team-and-agents.md sections 11-12 with the GitHub CLI.
+# Applies the repository settings from docs/workflow/team-and-agents.md (Repository settings) and .github/rulesets/ with the GitHub CLI.
 # Default is DRY-RUN: it only prints the commands. Nothing changes without --apply.
 #
 # Usage: scripts/github-apply-settings.sh OWNER/REPO [--apply] [--approvals N] [--no-main-ruleset]
